@@ -1,0 +1,83 @@
+{
+  "currDet": [
+    {
+      "date": "31-10-2025",
+      "yearStDate": "01-01-2025",
+      "yearStAmt": "2584"
+    }
+  ],
+  "expenses": [
+    {
+      "expAmt": "42",
+      "expBank": "ICICI",
+      "expDate": "1",
+      "expName": "Monthly Expense"
+    },
+    {
+      "expAmt": "18",
+      "expBank": "ICICI",
+      "expDate": "1",
+      "expName": "Rent"
+    },
+    {
+      "expAmt": "5",
+      "expBank": "ICICI",
+      "expDate": "1",
+      "expName": "Education"
+    }
+  ],
+  "investments": [
+    {
+      "investAmt": "5",
+      "investBank": "ICICI",
+      "investDate": "10",
+      "investName": "PPF"
+    },
+    {
+      "investAmt": "0",
+      "investBank": "ICICI",
+      "investDate": "1",
+      "investName": "SIP"
+    }
+  ],
+  "loans": [
+    {
+      "loanAmt": "35",
+      "loanBank": "ICICI",
+      "loanDate": "1",
+      "loanEMI": "27",
+      "loanName": "Navi Loan"
+    },
+    {
+      "loanAmt": "12.5",
+      "loanBank": "HDFC",
+      "loanDate": "2",
+      "loanEMI": "14",
+      "loanName": "HDFC CC Loan"
+    },
+    {
+      "loanAmt": "20",
+      "loanBank": "ICICI",
+      "loanDate": "5",
+      "loanEMI": "13",
+      "loanName": "ICICI CC Loan"
+    },
+    {
+      "loanAmt": "22.5",
+      "loanBank": "ICICI",
+      "loanDate": "5",
+      "loanEMI": "10",
+      "loanName": "Car Loan"
+    }
+  ],
+  "custloans": [
+    {
+      "custloanAmt": "250",
+      "custloanName": "Pappu Bhai"
+    },
+    {
+      "custloanAmt": "400",
+      "custloanName": "Saif"
+    }
+  ]
+}
