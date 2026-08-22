@@ -1,5 +1,6 @@
 # BACKEND
 pip install fastapi uvicorn opencv-python python-multipart
+pip install ultralytics opencv-python
 uvicorn main:app --reload --port 8000
 
 # FRONTEND
