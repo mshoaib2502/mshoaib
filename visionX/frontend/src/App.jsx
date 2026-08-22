@@ -10,12 +10,15 @@ export default function App(){
     setData(await res.json());
   };
   return (
-    <div style={{padding:20}}>
-      <h2>VisionX - Robotics Video Annotator</h2>
+    <div style={{padding:16, fontFamily:"sans-serif"}}>
+      <h2>Vision X - Robotics Annotator</h2>
       <input type="file" accept="video/*" onChange={upload} />
-      {data && <Annotator videoId={data.video_id} frames={data.frames} />}
+      {data && (
+        <div style={{marginTop:12}}>
+          <p>Video: {data.video_id} | Frames: {data.count}</p>
+          <Annotator videoId={data.video_id} frames={data.frames} />
+        </div>
+      )}
     </div>
   );
 }
-
-// Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
