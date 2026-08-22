@@ -1,82 +1,85 @@
 {
   "currDet": [
     {
-      "date": "31-10-2025",
+      "date": "30-09-2026",
       "yearStDate": "01-01-2025",
-      "yearStAmt": "2584"
+      "yearStAmt": "2175"
     }
   ],
   "expenses": [
     {
-      "expAmt": "42",
-      "expBank": "ICICI",
+      "expAmt": "55",
+      "expBank": "HDFC",
       "expDate": "1",
       "expName": "Monthly Expense"
     },
     {
-      "expAmt": "18",
-      "expBank": "ICICI",
+      "expAmt": "20",
+      "expBank": "HDFC",
       "expDate": "1",
       "expName": "Rent"
     },
     {
       "expAmt": "5",
-      "expBank": "ICICI",
+      "expBank": "HDFC",
       "expDate": "1",
       "expName": "Education"
     }
   ],
   "investments": [
     {
-      "investAmt": "5",
+      "investAmt": "12.5",
       "investBank": "ICICI",
-      "investDate": "10",
+      "investDate": "27",
       "investName": "PPF"
     },
     {
-      "investAmt": "0",
-      "investBank": "ICICI",
+      "investAmt": "7.5",
+      "investBank": "HDFC",
       "investDate": "1",
       "investName": "SIP"
     }
   ],
   "loans": [
     {
-      "loanAmt": "35",
+      "loanAmt": "20.5",
+      "loanBank": "ICICI",
+      "loanDate": "10",
+      "loanEMI": "55",
+      "loanName": "ICICI PL 2"
+    },
+    {
+      "loanAmt": "27",
+      "loanBank": "ICICI",
+      "loanDate": "3",
+      "loanEMI": "42",
+      "loanName": "Amazon Loan"
+    },
+    {
+      "loanAmt": "16.5",
       "loanBank": "ICICI",
       "loanDate": "1",
-      "loanEMI": "27",
+      "loanEMI": "29",
+      "loanName": "ICICI PL 1"
+    },
+    {
+      "loanAmt": "35",
+      "loanBank": "HDFC",
+      "loanDate": "1",
+      "loanEMI": "7",
       "loanName": "Navi Loan"
     },
     {
-      "loanAmt": "12.5",
-      "loanBank": "HDFC",
-      "loanDate": "2",
-      "loanEMI": "14",
-      "loanName": "HDFC CC Loan"
-    },
-    {
       "loanAmt": "20",
-      "loanBank": "ICICI",
-      "loanDate": "5",
-      "loanEMI": "13",
+      "loanBank": "HDFC",
+      "loanDate": "1",
+      "loanEMI": "2",
       "loanName": "ICICI CC Loan"
-    },
-    {
-      "loanAmt": "22.5",
-      "loanBank": "ICICI",
-      "loanDate": "5",
-      "loanEMI": "10",
-      "loanName": "Car Loan"
     }
   ],
   "custloans": [
     {
-      "custloanAmt": "250",
-      "custloanName": "Pappu Bhai"
-    },
-    {
-      "custloanAmt": "400",
+      "custloanAmt": "350",
       "custloanName": "Saif"
     }
   ]

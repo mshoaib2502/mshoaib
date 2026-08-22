@@ -30,8 +30,6 @@ def getSeqChangeFlag(filename):
         onlySeqChange = 'N'
     return onlySeqChange
 
-
-
 def populateFileDateDict(files):
     fileDateDict = {}
     prevDateTime = ""
@@ -44,7 +42,6 @@ def populateFileDateDict(files):
             fileDateDict[dateTime] = fileDateDict[dateTime] + 1
         prevDateTime = dateTime
     return fileDateDict
-
 
 def rename_file(folderName, old_filename, new_filename):
     if new_filename != "":
@@ -93,7 +90,6 @@ def get_filename_wo_seq(filename):
             filename_wo_seq = filename_wo_seq + " " + filename_wo_seq_list[i]
 
     return filename_wo_seq
-
 
 def file_full_format(dateTime, folderName):
     folderDesc = ""

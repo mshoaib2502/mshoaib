@@ -4,6 +4,7 @@ from changeImageName import *
 
 #root = "C:\\Users\\Shoaib\\Desktop\\Z6Copy"
 #root = "D:\\Onedrives\\OneDrive - Saima\\OneDrive\\Temp\\SelectedUnorganized"
+#root = "D:\\OneDrives\\Shoaib - OneDrive\\OneDrive\\Photos And Videos\\Family - Shoaib\\Shanawar\\Shanawar - School"
 root = "C:\\Users\\shoaib\\Downloads\\QuickShare"
 
 if os.path.exists(root):

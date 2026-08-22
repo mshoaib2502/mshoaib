@@ -61,7 +61,7 @@ def read_data_file(fullDataFile):
 
 def open_sheet(filename):
     wb = xl.load_workbook(filename)
-    sheet = wb['Sheet1']
+    sheet = wb['Debt']
 
     #Delete the sheet
     for row in range(1, sheet.max_row + 1):
@@ -129,11 +129,11 @@ def write_summary(sheet, rowNo, currDet, bankDet, totInvest, totExp, totLoan, cu
         rowNo+=1
 
     #Bank Section
-    #rowNo+=1
-    #for bankName in bankDet.keys():
-        #sheet.cell(rowNo, summHeaderCol).value = bankName
-        #sheet.cell(rowNo, summAmtCol).value = bankDet[bankName]
-        #rowNo+=1
+    rowNo+=1
+    for bankName in bankDet.keys():
+        sheet.cell(rowNo, summHeaderCol).value = bankName
+        sheet.cell(rowNo, summAmtCol).value = bankDet[bankName]
+        rowNo+=1
     
     rowNo+=1
     return rowNo,totExpAbsCell,totInvestAbsCell
