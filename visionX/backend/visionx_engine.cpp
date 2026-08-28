@@ -18,15 +18,23 @@ struct Detection
     float conf;
     std::string class_name;
     int frame_idx;
+    int track_id = 0;
 };
 struct VideoJob
 {
     std::string job_id;
     std::string video_path;
-    int total_frames;
-    int processed;
+    int total_frames = 0;
+    int processed = 0;
     std::vector<std::vector<Detection>> all_detections;
     bool done = false;
+};
+
+struct Track
+{
+    int track_id;
+    Detection last_det;
+    int frames_since_seen = 0;
 };
 
 class AsyncVideoEngine
@@ -37,6 +45,7 @@ private:
     std::mutex job_mtx;
     std::vector<std::string> names = {"person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"};
 
+    // ---- YOLO ----
     std::vector<Detection> run_yolo(cv::Mat &img, int frame_idx)
     {
         int W = img.cols, H = img.rows;
@@ -68,8 +77,60 @@ private:
         cv::dnn::NMSBoxes(boxes, confs, 0.5, 0.45, idx);
         std::vector<Detection> res;
         for (int i : idx)
-            res.push_back({boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height, cids[i], confs[i], names[cids[i]], frame_idx});
+            res.push_back({boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height, cids[i], confs[i], names[cids[i]], frame_idx, 0});
         return res;
+    }
+
+    // ---- IOU ----
+    float iou(Detection &a, Detection &b)
+    {
+        int x1 = std::max(a.x, b.x), y1 = std::max(a.y, b.y);
+        int x2 = std::min(a.x + a.w, b.x + b.w), y2 = std::min(a.y + a.h, b.y + b.h);
+        int iw = std::max(0, x2 - x1), ih = std::max(0, y2 - y1);
+        float inter = iw * ih;
+        float uni = a.w * a.h + b.w * b.h - inter;
+        return uni > 0 ? inter / uni : 0;
+    }
+
+    // ---- TRACKING ----
+    void assign_track_ids_internal(std::vector<std::vector<Detection>> &all_frames)
+    {
+        std::vector<Track> tracks;
+        int next_id = 1;
+        for (int f = 0; f < all_frames.size(); f++)
+        {
+            for (auto &t : tracks)
+                t.frames_since_seen++;
+            for (auto &det : all_frames[f])
+            {
+                int best = -1;
+                float best_iou = 0.3;
+                for (int i = 0; i < tracks.size(); i++)
+                {
+                    if (tracks[i].last_det.class_id != det.class_id)
+                        continue;
+                    if (tracks[i].frames_since_seen > 30)
+                        continue;
+                    float cur = iou(det, tracks[i].last_det);
+                    if (cur > best_iou)
+                    {
+                        best_iou = cur;
+                        best = i;
+                    }
+                }
+                if (best != -1)
+                {
+                    det.track_id = tracks[best].track_id;
+                    tracks[best].last_det = det;
+                    tracks[best].frames_since_seen = 0;
+                }
+                else
+                {
+                    det.track_id = next_id++;
+                    tracks.push_back({det.track_id, det, 0});
+                }
+            }
+        }
     }
 
 public:
@@ -101,7 +162,10 @@ public:
                 }
                 f_idx++;
             }
-            std::lock_guard<std::mutex> lock(job_mtx); if(jobs.count(job_id)) jobs[job_id].done=true; })
+            // Tracking after all frames
+            { std::lock_guard<std::mutex> lock(job_mtx);
+              if(jobs.count(job_id)){ assign_track_ids_internal(jobs[job_id].all_detections); jobs[job_id].done=true; }
+            } })
             .detach();
         return job_id;
     }
@@ -132,10 +196,51 @@ public:
             return {};
         return jobs[job_id].all_detections;
     }
+
+    // ---- INTERPOLATION API ----
+    std::vector<Detection> interpolate_keyframes(Detection start_box, Detection end_box, int start_frame, int end_frame)
+    {
+        std::vector<Detection> result;
+        int n = end_frame - start_frame;
+        if (n <= 0)
+            return {start_box};
+        for (int i = 0; i <= n; i++)
+        {
+            float t = (float)i / n;
+            Detection d;
+            d.x = start_box.x + (end_box.x - start_box.x) * t;
+            d.y = start_box.y + (end_box.y - start_box.y) * t;
+            d.w = start_box.w + (end_box.w - start_box.w) * t;
+            d.h = start_box.h + (end_box.h - start_box.h) * t;
+            d.class_id = start_box.class_id;
+            d.class_name = start_box.class_name;
+            d.track_id = start_box.track_id;
+            d.frame_idx = start_frame + i;
+            d.conf = 1.0;
+            result.push_back(d);
+        }
+        return result;
+    }
 };
 
 PYBIND11_MODULE(visionx_engine, m)
 {
-    py::class_<Detection>(m, "Detection").def_readonly("x", &Detection::x).def_readonly("y", &Detection::y).def_readonly("w", &Detection::w).def_readonly("h", &Detection::h).def_readonly("class_id", &Detection::class_id).def_readonly("conf", &Detection::conf).def_readonly("class_name", &Detection::class_name).def_readonly("frame_idx", &Detection::frame_idx);
-    py::class_<AsyncVideoEngine>(m, "AsyncVideoEngine").def(py::init<>()).def("load_model", &AsyncVideoEngine::load_model).def("submit_video", &AsyncVideoEngine::submit_video).def("get_video_status", &AsyncVideoEngine::get_video_status).def("get_video_results", &AsyncVideoEngine::get_video_results);
+    py::class_<Detection>(m, "Detection")
+        .def(py::init<>())
+        .def_readwrite("x", &Detection::x)
+        .def_readwrite("y", &Detection::y)
+        .def_readwrite("w", &Detection::w)
+        .def_readwrite("h", &Detection::h)
+        .def_readwrite("class_id", &Detection::class_id)
+        .def_readwrite("conf", &Detection::conf)
+        .def_readwrite("class_name", &Detection::class_name)
+        .def_readwrite("frame_idx", &Detection::frame_idx)
+        .def_readwrite("track_id", &Detection::track_id);
+    py::class_<AsyncVideoEngine>(m, "AsyncVideoEngine")
+        .def(py::init<>())
+        .def("load_model", &AsyncVideoEngine::load_model)
+        .def("submit_video", &AsyncVideoEngine::submit_video)
+        .def("get_video_status", &AsyncVideoEngine::get_video_status)
+        .def("get_video_results", &AsyncVideoEngine::get_video_results)
+        .def("interpolate_keyframes", &AsyncVideoEngine::interpolate_keyframes);
 }

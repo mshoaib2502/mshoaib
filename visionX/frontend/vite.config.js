@@ -7,7 +7,8 @@ export default defineConfig({
     proxy: {
       '/upload-video': 'http://localhost:8000',
       '/video-job': 'http://localhost:8000',
-      '/videos': 'http://localhost:8000'
+      '/videos': 'http://localhost:8000',
+      '/interpolate': 'http://localhost:8000'
     }
   }
 })
