@@ -11,6 +11,8 @@ summAmtCol = summHeaderCol+1
 summLoanNameCol = summAmtCol+1 
 summLoanAmtCol = summLoanNameCol+1 
 
+global totCustLoan
+
 def update_json_by_month(fullDataFile):
     shutil.copy(fullDataFile, 'data_backup.json')
     datafile = open(fullDataFile, "r")
@@ -84,10 +86,8 @@ def write_header(sheet):
 
 def write_summary(sheet, rowNo, currDet, bankDet, totInvest, totExp, totLoan, custloans):
 
-    totExpAndLoan = totExp + totLoan + totInvest
-
     sheet.cell(rowNo, summHeaderCol).value = 'Total Exp'
-    sheet.cell(rowNo, summAmtCol).value = totExpAndLoan
+    sheet.cell(rowNo, summAmtCol).value = "=sum(" + sheet.cell(2, 3).coordinate + ":" + sheet.cell(rowNo-1, 3).coordinate + ")"
 
     # Write Total EMI Details
     if (totLoan > 0):
@@ -98,8 +98,9 @@ def write_summary(sheet, rowNo, currDet, bankDet, totInvest, totExp, totLoan, cu
 
 
     # Write Custom Loan Details
+    global totCustLoan
     rowNo+=1
-    rowNo,custloansCnt = write_custloan_details(sheet, rowNo, custloans)
+    rowNo,custloansCnt,totCustLoan = write_custloan_details(sheet, rowNo, custloans)
 
     # Write Total Loan Details
     if (totLoan > 0 or custloansCnt > 0):
@@ -196,6 +197,11 @@ def write_excel(filename, fullDataFile):
 
     # Write Loan EMI Details
     totalLoanAndOthers = totExp + totInvest
+
+    if (totCustLoan > 0):
+        totPending = totPending + totCustLoan
+        totalLoanAndOthers = totalLoanAndOthers + totCustLoan
+
     if (maxEMI > 0):
         write_loan_emi_details(sheet, currDet, loans, maxEMI, totExpAbsCell, totInvestAbsCell, totPending, totalLoanAndOthers, rowNo)
 

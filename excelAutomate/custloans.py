@@ -15,5 +15,5 @@ def write_custloan_details(sheet, rowNo, custloans):
 
         totCustLoan = totCustLoan + float(custloan['custloanAmt'])
 
-    return rowNo,custloansCnt
+    return rowNo,custloansCnt,totCustLoan
 
